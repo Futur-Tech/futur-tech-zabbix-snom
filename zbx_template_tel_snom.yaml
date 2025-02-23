@@ -1,6 +1,6 @@
 zabbix_export:
   version: '6.0'
-  date: '2025-02-23T20:29:50Z'
+  date: '2025-02-23T21:07:49Z'
   groups:
     - uuid: 1d12408342854fd5a4436dd6d5d1bd4a
       name: Templates/Telephony
@@ -26,7 +26,7 @@ zabbix_export:
           triggers:
             - uuid: cee00fd8250e4d258b07b71951f1f68c
               expression: 'max(/Futur-Tech Snom Phone SNMP/icmpping,#3)=0'
-              name: 'Snom: Unavailable by ICMP ping'
+              name: 'Unavailable by ICMP ping'
               priority: HIGH
               description: 'Last three attempts returned timeout.  Please check device connectivity.'
               tags:
@@ -46,11 +46,11 @@ zabbix_export:
           triggers:
             - uuid: 3f29f9eed97e4de5b55828b32e5ec250
               expression: 'min(/Futur-Tech Snom Phone SNMP/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/Futur-Tech Snom Phone SNMP/icmppingloss,5m)<100'
-              name: 'Snom: High ICMP ping loss'
+              name: 'High ICMP ping loss'
               opdata: 'Loss: {ITEM.LASTVALUE1}'
               priority: WARNING
               dependencies:
-                - name: 'Snom: Unavailable by ICMP ping'
+                - name: 'Unavailable by ICMP ping'
                   expression: 'max(/Futur-Tech Snom Phone SNMP/icmpping,#3)=0'
               tags:
                 - tag: scope
@@ -75,9 +75,9 @@ zabbix_export:
               opdata: 'Value: {ITEM.LASTVALUE1}'
               priority: WARNING
               dependencies:
-                - name: 'Snom: High ICMP ping loss'
+                - name: 'High ICMP ping loss'
                   expression: 'min(/Futur-Tech Snom Phone SNMP/icmppingloss,5m)>{$ICMP_LOSS_WARN} and min(/Futur-Tech Snom Phone SNMP/icmppingloss,5m)<100'
-                - name: 'Snom: Unavailable by ICMP ping'
+                - name: 'Unavailable by ICMP ping'
                   expression: 'max(/Futur-Tech Snom Phone SNMP/icmpping,#3)=0'
               tags:
                 - tag: scope
@@ -116,15 +116,17 @@ zabbix_export:
           triggers:
             - uuid: 24e0f0b45fc948a995ff738cd54bdbdc
               expression: 'last(/Futur-Tech Snom Phone SNMP/snom.registrations)=0'
-              name: 'Snom: Phone is not registered'
+              name: 'Phone is not registered'
               priority: HIGH
             - uuid: ea1ea573f11146a4ab4c349f9429e3cf
-              expression: 'change(/Futur-Tech Snom Phone SNMP/snom.registrations)>0'
-              name: 'Snom: Phone registrations have decreased'
+              expression: 'change(/Futur-Tech Snom Phone SNMP/snom.registrations)<0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'change(/Futur-Tech Snom Phone SNMP/snom.registrations)>0'
+              name: 'Phone registrations have decreased'
               priority: AVERAGE
               manual_close: 'YES'
               dependencies:
-                - name: 'Snom: Phone is not registered'
+                - name: 'Phone is not registered'
                   expression: 'last(/Futur-Tech Snom Phone SNMP/snom.registrations)=0'
         - uuid: d4d6ca582fdc4a118c44d732ad370ad2
           name: 'Snom: Uptime'
@@ -158,7 +160,7 @@ zabbix_export:
           triggers:
             - uuid: 884eb0a561544517ad0010b79ffaca2d
               expression: 'last(/Futur-Tech Snom Phone SNMP/system.name,#1)<>last(/Futur-Tech Snom Phone SNMP/system.name,#2) and length(last(/Futur-Tech Snom Phone SNMP/system.name))>0'
-              name: 'Snom: Firmware has changed'
+              name: 'Firmware has changed'
               event_name: 'Snom: Firmware has changed (new: {ITEM.VALUE})'
               priority: INFO
               description: 'Acknowledge to close the problem manually.'
@@ -188,12 +190,12 @@ zabbix_export:
           triggers:
             - uuid: 4c24671b02f14de6942dd285f4ac3189
               expression: 'max(/Futur-Tech Snom Phone SNMP/zabbix[host,snmp,available],{$SNMP.TIMEOUT})=0'
-              name: 'Snom: No SNMP data collection'
+              name: 'No SNMP data collection'
               opdata: 'Current state: {ITEM.LASTVALUE1}'
               priority: WARNING
               description: 'SNMP is not available for polling. Please check device connectivity and SNMP settings.'
               dependencies:
-                - name: 'Snom: Unavailable by ICMP ping'
+                - name: 'Unavailable by ICMP ping'
                   expression: 'max(/Futur-Tech Snom Phone SNMP/icmpping,#3)=0'
               tags:
                 - tag: scope
